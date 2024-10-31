@@ -10,8 +10,12 @@ router = Router()
 # Функция для реагирования на команду /start
 @router.message(CommandStart())
 async def start(message: Message):
-    telegram_id = message.from_user.id
-    await message.answer("Выберите опцию:", reply_markup=main_contact_kb())
+    username = message.from_user.first_name
+    welcome_text = (
+        f"Привет, {username}! Я готов к работе. 🔗\n\n"
+        f"Просто отправьте мне ссылку, а я всё сделаю. 📸🎥"
+    )
+    await message.answer(welcome_text, reply_markup=main_contact_kb())
 
 
 @router.message(F.text == "💬 INFO")
@@ -45,12 +49,20 @@ async def bot_info(message: Message):
 @router.message()
 async def download_media(message: Message):
     input_url = message.text
-    output_media = download_instagram_post(input_url)
-    if isinstance(output_media, str):
-        await message.answer(output_media)
+    if "www.instagram.com" in input_url:
+        output_media = download_instagram_post(input_url)
+        if isinstance(output_media, str):
+            await message.answer(output_media)
+        else:
+            for type, url in output_media.items():
+                if "Изображение" in type:
+                    await message.answer_photo(url)
+                elif "Видео" in type:
+                    await message.answer_video(url)
     else:
-        for type, url in output_media.items():
-            if "Изображение" in type:
-                await message.answer_photo(url)
-            elif "Видео" in type:
-                await message.answer_video(url)
+        await message.answer(
+            f"Вы прислали странную ссылочку 📝\n"
+            f"Незнаю даже, что с ней сделать 😰\n"
+            f"Проверьте правильность 🔍 или \n"
+            f"напишите мне @safarik47 🆘"
+        )

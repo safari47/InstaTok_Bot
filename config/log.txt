@@ -42,3 +42,5 @@
 2024-10-30 at 18:27:00 | INFO | Бот успешно запущен.
 2024-10-30 at 19:59:14 | ERROR | Ошибка Instaloader: JSON Query to graphql/query: HTTPSConnectionPool(host='www.instagram.com', port=443): Max retries exceeded with url: /graphql/query?variables=%7B%22shortcode%22%3A%22C5I6kUhsRyn%22%7D&doc_id=8845758582119845&server_timestamps=true (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1092715e0>: Failed to resolve 'www.instagram.com' ([Errno 8] nodename nor servname provided, or not known)"))
 2024-10-30 at 19:59:14 | INFO | Ошибка возникла с URL: https://www.instagram.com/dtlrlifestyle/p/C5I6kUhsRyn/
+2024-10-31 at 15:44:56 | INFO | Бот успешно запущен.
+2024-10-31 at 16:16:12 | INFO | Бот успешно запущен.
