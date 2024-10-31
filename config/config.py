@@ -26,7 +26,6 @@ class Settings(BaseSettings):
         env_file=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
     )
 
-
 # Получаем параметры для загрузки переменных среды
 settings = Settings()
 
