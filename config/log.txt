@@ -16,3 +16,29 @@
 2024-10-30 at 16:07:25 | INFO | Бот успешно запущен.
 2024-10-30 at 16:07:35 | ERROR | Ошибка Instaloader: Fetching Post metadata failed.
 2024-10-30 at 16:07:35 | INFO | Ошибка возникла с URL: https://www.instagram.com/reel/DBigsh=MmxxM3o3dTEybTBp
+2024-10-30 at 16:36:08 | INFO | Бот успешно запущен.
+2024-10-30 at 16:36:11 | ERROR | Ошибка Instaloader: Fetching Post metadata failed.
+2024-10-30 at 16:36:11 | INFO | Ошибка возникла с URL: https://www.instagram.com/adrenaline.sneaker/p/C6sqENGrHgr/
+2024-10-30 at 16:36:16 | ERROR | Ошибка Instaloader: Fetching Post metadata failed.
+2024-10-30 at 16:36:16 | INFO | Ошибка возникла с URL: https://www.instagram.com/gloryalameda/p/C5b0ZttvluS/
+2024-10-30 at 16:36:50 | ERROR | Ошибка Instaloader: Fetching Post metadata failed.
+2024-10-30 at 16:36:50 | INFO | Ошибка возникла с URL: https://www.instagram.com/adrenaline.sneaker/p/C6sqENGrHgr/
+2024-10-30 at 16:38:35 | INFO | Бот успешно запущен.
+2024-10-30 at 16:39:27 | INFO | Бот успешно запущен.
+2024-10-30 at 16:40:37 | ERROR | Ошибка Instaloader: Fetching Post metadata failed.
+2024-10-30 at 16:40:37 | INFO | Ошибка возникла с URL: https://www.instagram.com/adrenaline.sneaker/p/C6sqENGrHgr/
+2024-10-30 at 16:41:33 | ERROR | Ошибка Instaloader: Fetching Post metadata failed.
+2024-10-30 at 16:41:33 | INFO | Ошибка возникла с URL: https://www.instagram.com/accounts/login/?next=https%3A%2F%2Fwww.instagram.com%2Fslamdunk_htx%2F&is_from_rle
+2024-10-30 at 16:41:52 | ERROR | Ошибка Instaloader: Fetching Post metadata failed.
+2024-10-30 at 16:41:52 | INFO | Ошибка возникла с URL: https://www.instagram.com/slamdunk_htx/
+2024-10-30 at 16:44:49 | INFO | Бот успешно запущен.
+2024-10-30 at 16:45:19 | ERROR | Ошибка Instaloader: Fetching Post metadata failed.
+2024-10-30 at 16:45:19 | INFO | Ошибка возникла с URL: https://www.instagram.com/adrenaline.sneaker/p/C6sqENGrHgr/
+2024-10-30 at 17:23:41 | INFO | Бот успешно запущен.
+2024-10-30 at 17:25:02 | INFO | Бот успешно запущен.
+2024-10-30 at 17:26:20 | INFO | Бот успешно запущен.
+2024-10-30 at 17:26:47 | INFO | Бот успешно запущен.
+2024-10-30 at 18:21:48 | INFO | Бот успешно запущен.
+2024-10-30 at 18:27:00 | INFO | Бот успешно запущен.
+2024-10-30 at 19:59:14 | ERROR | Ошибка Instaloader: JSON Query to graphql/query: HTTPSConnectionPool(host='www.instagram.com', port=443): Max retries exceeded with url: /graphql/query?variables=%7B%22shortcode%22%3A%22C5I6kUhsRyn%22%7D&doc_id=8845758582119845&server_timestamps=true (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1092715e0>: Failed to resolve 'www.instagram.com' ([Errno 8] nodename nor servname provided, or not known)"))
+2024-10-30 at 19:59:14 | INFO | Ошибка возникла с URL: https://www.instagram.com/dtlrlifestyle/p/C5I6kUhsRyn/

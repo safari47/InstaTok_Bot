@@ -1,6 +1,30 @@
 import instaloader
 from urllib.parse import urlparse
 from loguru import logger
+import functools, time
+
+def timer(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        val = func(*args, **kwargs)
+        end = time.perf_counter()
+        work_time = end - start
+        print(f'Время выполнения {func.__name__}: {round(work_time, 4)} сек.')
+        return val
+    return wrapper
+
+
+def get_shortcode(post_url):
+    parsed_url = urlparse(post_url)
+    path_parts = parsed_url.path.strip("/").split("/")
+
+    if len(path_parts) > 2:
+        short_code = path_parts[2]
+    else:
+        short_code = path_parts[1]
+
+    return short_code
 
 
 def download_instagram_post(post_url: str) -> dict[str]:
@@ -11,8 +35,8 @@ def download_instagram_post(post_url: str) -> dict[str]:
 
     try:
         # Извлекаем короткий код из URL поста
-        parsed_url = urlparse(post_url)
-        short_code = parsed_url.path.split("/")[2]
+        
+        short_code = get_shortcode(post_url)
 
         # Загружаем пост
         post = instaloader.Post.from_shortcode(L.context, short_code)
@@ -52,5 +76,6 @@ def download_instagram_post(post_url: str) -> dict[str]:
 
 
 # Пример использования:
-# https://www.instagram.com/p/C74D3n8tyrr/?igsh=YnNpOWh1b3BmZmI=
+# download_instagram_post('https://www.instagram.com/adrenaline.sneaker/p/C6sqENGrHgr/')
+# download_instagram_post('https://www.instagram.com/p/C6sqENGrHgr/?igsh=amdzdWxxNm8xdWo4')
 

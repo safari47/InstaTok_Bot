@@ -46,7 +46,6 @@ async def bot_info(message: Message):
 async def download_media(message: Message):
     input_url = message.text
     output_media = download_instagram_post(input_url)
-    print(output_media)
     if isinstance(output_media, str):
         await message.answer(output_media)
     else:
