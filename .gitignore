@@ -13,5 +13,4 @@ venv/
 *.log
 *.tmp
 
-# Игнорировать действие по зависимости
-requirements.txt
+

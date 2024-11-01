@@ -1,0 +1,6 @@
+aiogram==3.10.0
+instaloader==4.13.2
+loguru==0.7.2
+pydantic==2.8.2
+pydantic-settings==2.6.0
+pydantic_core==2.20.1
