@@ -2,7 +2,7 @@ from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from keyboards.kb import main_contact_kb
-from utils.utils import download_instagram_post
+from utils.utils import download_instagram_post, download_tiktok_video
 
 router = Router()
 
@@ -46,23 +46,46 @@ async def bot_info(message: Message):
     )
 
 
+instagram = [F.text.contains("instagram.com")]
+
+
+@router.message(*instagram)
+async def download_media(message: Message):
+    wait_message = await message.answer(
+        f"Я уже начал скачивать видео 📹\n" f"подожди одну секундочку ⏳"
+    )
+    input_url = message.text
+    output_media = download_instagram_post(input_url)
+    await wait_message.delete()
+    if isinstance(output_media, str):
+        await message.answer(output_media)
+    else:
+        for type, url in output_media.items():
+            if "Изображение" in type:
+                await message.answer_photo(url)
+            elif "Видео" in type:
+                await message.answer_video(url)
+
+
+tiktok = [F.text.contains("tiktok.com")]
+
+
+@router.message(*tiktok)
+async def download_tiktok(message: Message):
+    wait_message = await message.answer(
+        f"Я уже начал скачивать видео 📹\n" f"подожди одну секундочку ⏳"
+    )
+    input_url = message.text
+    output_media = download_tiktok_video(input_url)
+    await wait_message.delete()
+    await message.answer_video(output_media)
+
+
 @router.message()
 async def download_media(message: Message):
-    input_url = message.text
-    if "www.instagram.com" in input_url:
-        output_media = download_instagram_post(input_url)
-        if isinstance(output_media, str):
-            await message.answer(output_media)
-        else:
-            for type, url in output_media.items():
-                if "Изображение" in type:
-                    await message.answer_photo(url)
-                elif "Видео" in type:
-                    await message.answer_video(url)
-    else:
-        await message.answer(
-            f"Вы прислали странную ссылочку 📝\n"
-            f"Незнаю даже, что с ней сделать 😰\n"
-            f"Проверьте правильность 🔍 или \n"
-            f"напишите мне @safarik47 🆘"
-        )
+    await message.answer(
+        f"Вы прислали странную ссылочку 📝\n"
+        f"Незнаю даже, что с ней сделать 😰\n"
+        f"Проверьте правильность 🔍 или \n"
+        f"напишите мне @safarik47 🆘"
+    )

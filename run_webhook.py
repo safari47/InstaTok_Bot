@@ -5,7 +5,7 @@ from aiohttp import web
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from handlers.start import router as start_router
 from config.config import bot, admins, dp, settings
-
+import ssl
 
 # Функция, которая настроит командное меню (дефолтное для всех пользователей)
 async def set_commands():
@@ -55,7 +55,7 @@ def main() -> None:
 
     # Регистрируем функцию, которая будет вызвана при остановке бота
     dp.shutdown.register(stop_bot)
-
+    
     # Создаем веб-приложение на базе aiohttp
     app = web.Application()
 
@@ -70,6 +70,9 @@ def main() -> None:
     # Настраиваем приложение и связываем его с диспетчером и ботом
     setup_application(app, dp, bot=bot)
 
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    context.load_cert_chain(certfile='@cert.pem', keyfile='key.pem')
+
     # Запускаем веб-сервер на указанном хосте и порте
     web.run_app(app, host=settings.HOST, port=settings.PORT)
 
@@ -79,3 +82,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     logger = logging.getLogger(__name__)  # Создаем логгер для использования в других частях программы
     main()  # Запускаем основную функцию
+
+
+
