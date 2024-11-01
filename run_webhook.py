@@ -7,24 +7,25 @@ from handlers.start import router as start_router
 from config.config import bot, admins, dp, settings
 import ssl
 
+
 # Функция, которая настроит командное меню (дефолтное для всех пользователей)
 async def set_commands():
     # Создаем список команд, которые будут доступны пользователям
-    commands = [BotCommand(command='start', description='Старт')]
-    # Устанавливаем эти команды как дефолтные для всех пользователей    
+    commands = [BotCommand(command="start", description="Старт")]
+    # Устанавливаем эти команды как дефолтные для всех пользователей
     await bot.set_my_commands(commands, BotCommandScopeDefault())
 
 
 # Функция, которая выполнится когда бот запустится
 async def start_bot():
-    # Устанавливаем командное меню    
+    # Устанавливаем командное меню
     await set_commands()
     # Устанавливаем вебхук для приема сообщений через заданный URL
     await bot.set_webhook(f"{settings.BASE_URL}{settings.WEBHOOK_PATH}")
     # Отправляем сообщение админам о том, что бот был запущен
     for admin_id in admins:
         try:
-            await bot.send_message(admin_id, f'Я запущен🥳.')
+            await bot.send_message(admin_id, f"Я запущен🥳.")
         except:
             pass
     logger.info("Бот успешно запущен.")
@@ -35,12 +36,12 @@ async def stop_bot():
     # Отправляем сообщение админам о том, что бот был остановлен
     try:
         for admin_id in admins:
-            await bot.send_message(admin_id, 'Бот остановлен. За что?😔')
+            await bot.send_message(admin_id, "Бот остановлен. За что?😔")
     except:
         pass
     # Удаляем вебхук и, при необходимости, очищаем ожидающие обновления или сохраняем
     await bot.delete_webhook(drop_pending_updates=False)
-    # Закрываем сессию бота, освобождая ресурсы    
+    # Закрываем сессию бота, освобождая ресурсы
     await bot.session.close()
     logger.error("Бот остановлен!")
 
@@ -55,14 +56,13 @@ def main() -> None:
 
     # Регистрируем функцию, которая будет вызвана при остановке бота
     dp.shutdown.register(stop_bot)
-    
+
     # Создаем веб-приложение на базе aiohttp
     app = web.Application()
 
     # Настраиваем обработчик запросов для работы с вебхуком
     webhook_requests_handler = SimpleRequestHandler(
-        dispatcher=dp,  # Передаем диспетчер
-        bot=bot  # Передаем объект бота
+        dispatcher=dp, bot=bot  # Передаем диспетчер  # Передаем объект бота
     )
     # Регистрируем обработчик запросов на определенном пути
     webhook_requests_handler.register(app, path=settings.WEBHOOK_PATH)
@@ -71,17 +71,23 @@ def main() -> None:
     setup_application(app, dp, bot=bot)
 
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    context.load_cert_chain(certfile='@cert.pem', keyfile='key.pem')
+    context.load_cert_chain(
+        certfile="/etc/letsencrypt/live/mediascrap.ru/fullchain.pem",
+        keyfile="/etc/letsencrypt/live/mediascrap.ru/privkey.pem",
+    )
 
     # Запускаем веб-сервер на указанном хосте и порте
-    web.run_app(app, host=settings.HOST, port=settings.PORT)
+    web.run_app(app, host=settings.HOST, port=settings.PORT, ssl_context=context)
+
 
 # Точка входа в программу
 if __name__ == "__main__":
     # Настраиваем логирование (информация, предупреждения, ошибки) и выводим их в консоль
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    logger = logging.getLogger(__name__)  # Создаем логгер для использования в других частях программы
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+    logger = logging.getLogger(
+        __name__
+    )  # Создаем логгер для использования в других частях программы
     main()  # Запускаем основную функцию
-
-
-
