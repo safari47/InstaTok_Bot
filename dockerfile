@@ -1,16 +1,7 @@
-FROM python:latest
-
-WORKDIR /src
-
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
+FROM python:3.9-alpine
+WORKDIR /bot
 COPY requirements.txt requirements.txt
-
-RUN apt-get update && apt-get install -y postgresql-client && \
-    pip install --no-cache-dir --upgrade -r requirements.txt
-
-COPY ./app 
-
-# FastAPI app assumed to be `main.py` in `app` directory
-CMD ["uvicorn", "app.test:app", "--host", "0.0.0.0", "--port", "8000"]
+RUN pip install --upgrade pip && pip install -r requirements.txt && chmod 755 .
+COPY . .
+ENV TZ Europe/Moscow
+CMD ["python3", "-u", "run_webhook.py"]
