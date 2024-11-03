@@ -40,7 +40,7 @@ async def stop_bot():
     except:
         pass
     # Удаляем вебхук и, при необходимости, очищаем ожидающие обновления или сохраняем
-    await bot.delete_webhook(drop_pending_updates=False)
+    await bot.delete_webhook(drop_pending_updates=True)
     # Закрываем сессию бота, освобождая ресурсы
     await bot.session.close()
     logger.error("Бот остановлен!")
@@ -70,14 +70,8 @@ def main() -> None:
     # Настраиваем приложение и связываем его с диспетчером и ботом
     setup_application(app, dp, bot=bot)
 
-    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    context.load_cert_chain(
-        certfile="/etc/letsencrypt/live/mediascrap.ru/fullchain.pem",
-        keyfile="/etc/letsencrypt/live/mediascrap.ru/privkey.pem",
-    )
-
     # Запускаем веб-сервер на указанном хосте и порте
-    web.run_app(app, host=settings.HOST, port=settings.PORT, ssl_context=context)
+    web.run_app(app, host=settings.HOST, port=settings.PORT)
 
 
 # Точка входа в программу

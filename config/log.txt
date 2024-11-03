@@ -75,3 +75,4 @@
 2024-11-03 at 14:30:00 | ERROR | Ошибка при загрузке видео TikTok: object NoneType can't be used in 'await' expression URL: https://www.tiktok.com/@anacbpereira22/video/7379658029903498529?is_from_webapp=1&sender_device=pc
 2024-11-03 at 14:31:24 | INFO | Бот успешно запущен.
 2024-11-03 at 14:33:03 | INFO | Бот успешно запущен.
+2024-11-03 at 14:47:36 | INFO | Бот успешно запущен.
