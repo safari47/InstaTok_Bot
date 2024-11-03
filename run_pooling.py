@@ -3,7 +3,7 @@ from aiogram.types import BotCommand, BotCommandScopeDefault
 from loguru import logger
 from handlers.start import router as start_router
 from config.config import bot, admins, dp
-
+from utils.db import initialize_database
 
 # Функция, которая настроит командное меню (дефолтное для всех пользователей)
 async def set_commands():
@@ -14,6 +14,9 @@ async def set_commands():
 # Функция, которая выполнится когда бот запустится
 async def start_bot():
     await set_commands()
+
+    await initialize_database()
+
     for admin_id in admins:
         try:
             await bot.send_message(admin_id, f"Я запущен🥳.")

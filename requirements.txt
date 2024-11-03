@@ -4,3 +4,7 @@ loguru==0.7.2
 pydantic==2.8.2
 pydantic-settings==2.6.0
 pydantic_core==2.20.1
+aiosqlite==0.20.0
+fake_useragent==1.5.1
+httpx
+bs4

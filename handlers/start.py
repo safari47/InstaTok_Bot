@@ -1,16 +1,32 @@
 from aiogram import Router, F
 from aiogram.filters import CommandStart
-from aiogram.types import Message
+from aiogram.types import Message,FSInputFile
 from keyboards.kb import main_contact_kb
-from utils.utils import download_instagram_post, download_tiktok_video
+from aiogram.utils.markdown import hlink
+from utils.instagram.instagram import download_instagram_post
+from utils.db import get_user_by_id, add_user
+from utils.tiktok.get_content import get_content
+from utils.tiktok.get_video_detail import get_video_detail
+from utils.tiktok.musicaldown import musicaldown
+import pathlib
+from loguru import logger
 
+cwd = pathlib.Path(__file__).parent.parent
 router = Router()
-
 
 # Функция для реагирования на команду /start
 @router.message(CommandStart())
 async def start(message: Message):
     username = message.from_user.first_name
+    telegram_id = message.from_user.id
+    user_data = await get_user_by_id(telegram_id)
+    if user_data is None:
+        await add_user(
+            telegram_id=telegram_id,
+            username=message.from_user.username,
+            first_name=message.from_user.first_name,
+        )
+
     welcome_text = (
         f"Привет, {username}! Я готов к работе. 🔗\n\n"
         f"Просто отправьте мне ссылку, а я всё сделаю. 📸🎥"
@@ -20,65 +36,90 @@ async def start(message: Message):
 
 @router.message(F.text == "💬 INFO")
 async def bot_info(message: Message):
-    owner_name = "Artem Kozlov"
-    owner_contact = "@safarik47"
-    stack = "Python, aiogram, TikTokApi, instaloader"
-    bot_purpose = "Загрузка фото, видео из Instagram, TikTok"
-    features = [
-        "🔍 Загрузка рилсов, IGTV видео Instagram",
-        "🔍 Загрузка фото из постов Instagram",
-        "🔍 Загрузка видео TikTok",
-    ]
-
-    features_formatted = "\n".join(features)
     await message.answer(
         f"🔥 Информация о боте 🔥\n"
         f"\n"
-        f"👤 Владелец бота: {owner_name}\n"
-        f"📬 Контакт владельца: {owner_contact}\n"
+        f"👤 Владелец бота: Artem Kozlov\n"
+        f"📬 Контакт владельца: @safarik47\n"
         f"\n"
-        f"🔧 Стек технологий: {stack}\n"
-        f"📌 Назначение бота: {bot_purpose}\n"
+        f"💵 Вы можете всегда меня отблагодарить:\n"
+        f"\n"
+        f"{hlink('Подкинуть копеечку 😇','https://www.tbank.ru/cf/AGhwjuw96bl')}\n"
         f"\n"
         f"💡 Основные функции:\n"
-        f"{features_formatted}\n"
+        f"🔍 Загрузка рилсов, IGTV видео Instagram\n"
+        f"🔍 Загрузка фото из постов Instagram\n"
+        f"🔍 Загрузка видео TikTok\n"
         f"\n"
+        f"💡 Преимущества:\n"
+        f"💨 Быстрота и эффективность\n"
+        f"💵 Не требует подписок на множество каналов для использования\n",
+        disable_web_page_preview=True
     )
+
 
 
 instagram = [F.text.contains("instagram.com")]
-
-
 @router.message(*instagram)
 async def download_media(message: Message):
     wait_message = await message.answer(
-        f"Я уже начал скачивать видео 📹\n" f"подожди одну секундочку ⏳"
+        "Я уже начал скачивать видео 📹\nПодожди одну секундочку ⏳"
     )
     input_url = message.text
-    output_media = download_instagram_post(input_url)
-    await wait_message.delete()
-    if isinstance(output_media, str):
-        await message.answer(output_media)
-    else:
-        for type, url in output_media.items():
-            if "Изображение" in type:
-                await message.answer_photo(url)
-            elif "Видео" in type:
-                await message.answer_video(url)
+    try:
+        output_media = download_instagram_post(input_url)
+        await wait_message.delete()
+        for media_type, url in output_media.items():
+            try:
+                if "Изображение" in media_type:
+                    await message.answer_photo(url)
+                elif "Видео" in media_type:
+                    await message.answer_video(url)
+            except Exception as e:
+                logger.error(f"Ошибка при выгрузке URL: {input_url}")
+                await message.answer(f"Извините, произошла ошибка, админ скоро это глянет.\nВы можете присылать другие ссылки")
+    except Exception as e:
+        await wait_message.delete()
+        logger.error(f"Произошла ошибка: {str(e)}")
+        await message.reply(f"Произошла непредвиденная ошибка: {str(e)}")
 
 
 tiktok = [F.text.contains("tiktok.com")]
-
-
 @router.message(*tiktok)
 async def download_tiktok(message: Message):
-    wait_message = await message.answer(
-        f"Я уже начал скачивать видео 📹\n" f"подожди одну секундочку ⏳"
-    )
-    input_url = message.text
-    output_media = download_tiktok_video(input_url)
-    await wait_message.delete()
-    await message.answer_video(output_media)
+    try:
+        wait_message = await message.answer(
+            "Я уже начал скачивать видео 📹\nПодожди одну секундочку ⏳"
+        )
+
+        input_url = message.text
+        video_id, video_url, cookies = (await get_video_detail(input_url))
+
+        if video_id is None:
+            await message.answer(
+                "Видео TikTok, которое вы хотите загрузить, не существует, возможно, оно удалено или является приватным видео."
+            )
+            return  # Завершить выполнение функции, если видео не найдено
+
+        output_directory = cwd / "video_upload"
+        output = output_directory / f"{video_id}.mp4"
+
+        if video_url is None or len(video_url) <= 0:
+            await musicaldown(url=input_url, output=output)
+        else:
+            await get_content(url=video_url, output=output, cookies=cookies)
+
+        await wait_message.delete()  # Удалить сообщение о загрузке
+
+        video = FSInputFile(output)
+        await message.answer_video(video=video)
+
+    except Exception as e:
+        logger.error(f"Ошибка при загрузке видео TikTok: {str(e)} URL: {input_url}")
+        await message.answer(
+            f"Произошла ошибка при загрузке видео.\n Пожалуйста, попробуйте еще раз позже.")
+    finally:
+        output.unlink()  # Удалить загруженный видео из папки
 
 
 @router.message()
