@@ -21,7 +21,7 @@ async def start_bot():
     # Устанавливаем командное меню
     await set_commands()
     # Устанавливаем вебхук для приема сообщений через заданный URL
-    await bot.set_webhook(f"{settings.BASE_URL}{settings.WEBHOOK_PATH}")
+    await bot.set_webhook(f"{settings.BASE_URL}/webhook")
     # Отправляем сообщение админам о том, что бот был запущен
     for admin_id in admins:
         try:
@@ -65,13 +65,18 @@ def main() -> None:
         dispatcher=dp, bot=bot  # Передаем диспетчер  # Передаем объект бота
     )
     # Регистрируем обработчик запросов на определенном пути
-    webhook_requests_handler.register(app, path=settings.WEBHOOK_PATH)
+    webhook_requests_handler.register(app, path='/webhook')
 
     # Настраиваем приложение и связываем его с диспетчером и ботом
     setup_application(app, dp, bot=bot)
 
+    # context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    # context.load_cert_chain(
+    #     certfile="/etc/letsencrypt/live/mediascrap.ru/fullchain.pem",
+    #     keyfile="/etc/letsencrypt/live/mediascrap.ru/privkey.pem",
+    # )
     # Запускаем веб-сервер на указанном хосте и порте
-    web.run_app(app, host=settings.HOST, port=settings.PORT)
+    web.run_app(app, host=settings.HOST, port=settings.PORT) #ssl_context=context)
 
 
 # Точка входа в программу
@@ -85,3 +90,8 @@ if __name__ == "__main__":
         __name__
     )  # Создаем логгер для использования в других частях программы
     main()  # Запускаем основную функцию
+
+
+
+
+

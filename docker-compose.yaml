@@ -2,8 +2,8 @@ version: '3.7'
 
 services:
   bot:
-    build: .
+    container_name: my_app
+    build: ./
     restart: always
     ports:
       - 8000:8000
-  

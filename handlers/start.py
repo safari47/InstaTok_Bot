@@ -68,7 +68,9 @@ async def download_media(message: Message):
     input_url = message.text
     try:
         output_media = download_instagram_post(input_url)
+        
         await wait_message.delete()
+        
         for media_type, url in output_media.items():
             try:
                 if "Изображение" in media_type:
@@ -76,17 +78,18 @@ async def download_media(message: Message):
                 elif "Видео" in media_type:
                     await message.answer_video(url)
             except Exception as e:
-                logger.error(f"Ошибка при выгрузке URL: {input_url}")
-                await message.answer(f"Извините, произошла ошибка, админ скоро это глянет.\nВы можете присылать другие ссылки")
+                logger.error(f"Ошибка {str(e)} при выгрузке URL: {input_url}")
+                await message.answer(f"Извините, произошла ошибка при отправке медиа.\nПрисылайте другие ссылки.")
     except Exception as e:
-        await wait_message.delete()
-        logger.error(f"Произошла ошибка: {str(e)}")
-        await message.reply(f"Произошла непредвиденная ошибка: {str(e)}")
+        await wait_message.delete()  
+        logger.error(f"Произошла ошибка при скачивании: {str(e)} URL: {input_url}")
+        await message.reply(f"Произошла непредвиденная ошибка при скачивании поста.\nПожалуйста, попробуйте позже.")
 
 
 tiktok = [F.text.contains("tiktok.com")]
 @router.message(*tiktok)
 async def download_tiktok(message: Message):
+    output = None  # Инициализировать переменную output
     try:
         wait_message = await message.answer(
             "Я уже начал скачивать видео 📹\nПодожди одну секундочку ⏳"
@@ -119,7 +122,9 @@ async def download_tiktok(message: Message):
         await message.answer(
             f"Произошла ошибка при загрузке видео.\n Пожалуйста, попробуйте еще раз позже.")
     finally:
-        output.unlink()  # Удалить загруженный видео из папки
+        # Проверяем, существует ли файл, перед удалением
+        if output is not None and output.exists():
+            output.unlink()
 
 
 @router.message()
