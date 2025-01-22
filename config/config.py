@@ -10,7 +10,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     BOT_TOKEN: str
-    ADMIN_IDS: List[int]
+    ADMIN_IDS: int
     HOST: str
     PORT: int
     BASE_URL: str
