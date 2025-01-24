@@ -1,6 +1,7 @@
 import instaloader
 from urllib.parse import urlparse
-from loguru import logger
+from config.config import L
+
 
 def get_shortcode(post_url):
     parsed_url = urlparse(post_url)
@@ -18,11 +19,9 @@ def download_instagram_post(post_url: str) -> dict[str, str]:
     """Функция для получения фото, видео контента из постов Instagram."""
     upload_file = {}
 
-    L = instaloader.Instaloader()
-
     # Извлекаем короткий код из URL пост
     short_code = get_shortcode(post_url)
-    
+
     # Загружаем пост
     post = instaloader.Post.from_shortcode(L.context, short_code)
 
@@ -50,3 +49,4 @@ def download_instagram_post(post_url: str) -> dict[str, str]:
 # Пример использования:
 # print(download_instagram_post('https://www.instagram.com/reel/DBwxztSsXK9/?igsh=am9lODZvdmd6b2U='))
 # print(download_instagram_post('https://www.instagram.com/reel/DBwOUQdxiu6/?igsh=MWhjMm45cTQzZDNzcg=='))
+print(download_instagram_post('https://www.instagram.com/reel/DE2pnu8qdRb/?igsh=ZWpneHd1d3NhcTVi'))

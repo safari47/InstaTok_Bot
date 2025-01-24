@@ -4,7 +4,7 @@ from loguru import logger
 from aiohttp import web
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from handlers.start import router as start_router
-from config.config import bot, admins, dp, settings
+from config.config import bot, dp, settings
 import ssl
 
 

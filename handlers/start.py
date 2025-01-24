@@ -11,6 +11,7 @@ from utils.tiktok.musicaldown import musicaldown
 import pathlib
 from loguru import logger
 from config.config import settings, bot
+from config.static import admin_notification, en, ru
 
 cwd = pathlib.Path(__file__).parent.parent
 router = Router()
@@ -19,7 +20,7 @@ router = Router()
 # Функция для реагирования на команду /start
 @router.message(CommandStart())
 async def start(message: Message):
-    username = message.from_user.first_name
+    print(message.from_user.language_code)
     telegram_id = message.from_user.id
     user_data = await get_user_by_id(telegram_id)
 
@@ -30,57 +31,51 @@ async def start(message: Message):
             first_name=message.from_user.first_name,
         )
 
-        admin_text = (
-            f"🚨 Новый пользователь! 🚨\n\n"
-            f"👤 Имя: {message.from_user.full_name}\n"
-            f"🔗 Telegram ID: {telegram_id}\n"
-            f"📎 Имя пользователя: @{message.from_user.username if message.from_user.username else 'Не указано'}\n"
-        )
-
         await bot.send_message(
-            chat_id=settings.ADMIN_IDS,
-            text=admin_text,
+            chat_id=settings.ADMIN_IDS,  # Здесь список или ID админа
+            text=admin_notification.format(
+                full_name=message.from_user.full_name,
+                telegram_id=telegram_id,
+                username=(
+                    message.from_user.username if message.from_user.username else "Не указано"
+                ),
+            ),
         )
 
-    welcome_text = (
-        f"Привет, {username}! Я готов к работе. 🔗\n\n"
-        f"Просто отправьте мне ссылку, а я всё сделаю. 📸🎥"
-    )
+    # Определяем язык пользователя (по умолчанию английский)
+    user_language = "ru" if message.from_user.language_code == "ru" else "en"
+
+    # Получаем текст приветствия и подставляем имя пользователя
+    welcome_text = ru["welcome_text"] if user_language == "ru" else en["welcome_text"]
+    welcome_text = welcome_text.format(username=message.from_user.username)
+
     await message.answer(welcome_text, reply_markup=main_contact_kb())
 
 
 @router.message(F.text == "💬 INFO")
 async def bot_info(message: Message):
+    # Определяем язык пользователя (по умолчанию английский)
+    language_code = "ru" if message.from_user.language_code == "ru" else "en"
+
+    # Определяем текст для ответа
+    response_text = ru["info"] if language_code == "ru" else en["info"]
+
     await message.answer(
-        f"🔥 Информация о боте 🔥\n"
-        f"\n"
-        f"👤 Владелец бота: Artem Kozlov\n"
-        f"📬 Контакт владельца: @safarik47\n"
-        f"\n"
-        f"💵 Вы можете всегда меня отблагодарить:\n"
-        f"\n"
-        f"{hlink('Подкинуть копеечку 😇','https://www.tbank.ru/cf/AGhwjuw96bl')}\n"
-        f"\n"
-        f"💡 Основные функции:\n"
-        f"🔍 Загрузка рилсов, IGTV видео Instagram\n"
-        f"🔍 Загрузка фото из постов Instagram\n"
-        f"🔍 Загрузка видео TikTok\n"
-        f"\n"
-        f"💡 Преимущества:\n"
-        f"💨 Быстрота и эффективность\n"
-        f"💵 Не требует подписок на множество каналов для использования\n",
+        response_text.format(
+            donate_url="https://www.tbank.ru/cf/AGhwjuw96bl"
+        ),  # Добавляем ссылку на донат
         disable_web_page_preview=True,
+        parse_mode="Markdown",
     )
 
 
-instagram = [F.text.contains("instagram.com")]
-
-
-@router.message(*instagram)
+@router.message(F.text.regexp(r"(https?://(www\.)?instagram\.com/\S+)"))
 async def download_media(message: Message):
-    wait_message = await message.answer(
-        "Я уже начал скачивать видео 📹\nПодожди одну секундочку ⏳"
-    )
+    # Определяем язык пользователя (по умолчанию английский)
+    language_code = "ru" if message.from_user.language_code == "ru" else "en"
+    messages = ru["messages"] if language_code == "ru" else en["messages"]
+
+    wait_message = await message.answer(messages["wait_message"])
     input_url = message.text
     try:
         output_media = download_instagram_post(input_url)
@@ -94,10 +89,8 @@ async def download_media(message: Message):
                 elif "Видео" in media_type:
                     await message.answer_video(url)
             except Exception as e:
-                logger.error(f"Ошибка {str(e)} при выгрузке URL: {input_url}")
-                await message.answer(
-                    f"Извините, произошла ошибка при отправке медиа.\nПрисылайте другие ссылки."
-                )
+                logger.error(f"Ошибка: {str(e)} при выгрузке URL: {input_url}")
+                await message.answer(messages["send_image_error"])
         else:
             logger.info(
                 f"ID: {message.from_user.id}, Имя: {message.from_user.username} — успешно получил результат для Instagram."
@@ -105,29 +98,27 @@ async def download_media(message: Message):
     except Exception as e:
         await wait_message.delete()
         logger.error(f"Произошла ошибка при скачивании: {str(e)} URL: {input_url}")
-        await message.reply(
-            f"Произошла непредвиденная ошибка при скачивании поста.\nПожалуйста, попробуйте позже."
-        )
+        await message.reply(messages["download_error"])
 
 
-tiktok = [F.text.contains("tiktok.com")]
-
-
-@router.message(*tiktok)
+@router.message(F.text.regexp(r"(https?://(www\.|vm\.|vt\.|vn\.)?tiktok\.com/\S+)"))
 async def download_tiktok(message: Message):
+    # Определяем язык сообщения
+    if message.from_user.language_code.startswith("ru"):
+        messages = ru["messages"]
+    else:
+        messages = en["messages"]
+
     output = None  # Инициализировать переменную output
     try:
-        wait_message = await message.answer(
-            "Я уже начал скачивать видео 📹\nПодожди одну секундочку ⏳"
-        )
+        wait_message = await message.answer(messages["wait_message"])
 
         input_url = message.text
         video_id, video_url, cookies = await get_video_detail(input_url)
 
         if video_id is None:
-            await message.answer(
-                "Видео TikTok, которое вы хотите загрузить, не существует, возможно, оно удалено или является приватным видео."
-            )
+            await wait_message.delete()
+            await message.answer(messages["tiktok_not_exist"])
             return  # Завершить выполнение функции, если видео не найдено
 
         output_directory = cwd / "video_upload"
@@ -144,13 +135,11 @@ async def download_tiktok(message: Message):
         await message.answer_video(video=video)
 
         logger.info(
-            f"ID: {message.from_user.id}, Имя: {message.from_user.username} — успешно получил результат для TikTok."
+            f"ID: {message.from_user.id}, Имя: @{message.from_user.username} — успешно получил результат для TikTok."
         )
     except Exception as e:
         logger.error(f"Ошибка при загрузке видео TikTok: {str(e)} URL: {input_url}")
-        await message.answer(
-            f"Произошла ошибка при загрузке видео.\n Пожалуйста, попробуйте еще раз позже."
-        )
+        await message.answer(messages["tiktok_download_error"])
     finally:
         # Проверяем, существует ли файл, перед удалением
         if output is not None and output.exists():
@@ -159,9 +148,8 @@ async def download_tiktok(message: Message):
 
 @router.message()
 async def download_media(message: Message):
-    await message.answer(
-        f"Вы прислали странную ссылочку 📝\n"
-        f"Незнаю даже, что с ней сделать 😰\n"
-        f"Проверьте правильность 🔍 или \n"
-        f"напишите мне @safarik47 🆘"
-    )
+    # Определяем язык пользователя (по умолчанию английский)
+    language_code = "ru" if message.from_user.language_code == "ru" else "en"
+    messages = ru["messages"] if language_code == "ru" else en["messages"]
+
+    await message.answer(messages["weird_link_message"])

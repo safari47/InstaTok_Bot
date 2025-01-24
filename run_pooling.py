@@ -2,7 +2,7 @@ import asyncio
 from aiogram.types import BotCommand, BotCommandScopeDefault
 from loguru import logger
 from handlers.start import router as start_router
-from config.config import bot, admins, dp,settings
+from config.config import bot, dp,settings
 from utils.db import initialize_database
 import logging
 
