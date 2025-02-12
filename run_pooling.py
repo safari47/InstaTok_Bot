@@ -36,19 +36,11 @@ async def main():
     dp.shutdown.register(stop_bot)
     # запуск бота в режиме long polling при запуске бот очищает все обновления, которые были за его моменты бездействия
     try:
-        await bot.delete_webhook(drop_pending_updates=True)
+        await bot.delete_webhook(drop_pending_updates=False)
         await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
     finally:
         await bot.session.close()
 
 
 if __name__ == "__main__":
-    # Настраиваем логирование (информация, предупреждения, ошибки) и выводим их в консоль
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    )
-    logger = logging.getLogger(
-        __name__
-    )  # Создаем логгер для использования в других частях программы
     asyncio.run(main())

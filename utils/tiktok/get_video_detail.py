@@ -3,7 +3,6 @@ import json
 from bs4 import BeautifulSoup as bs
 from pathlib import Path
 
-
 async def get_video_detail(url: str):
     """
     url: str -> tiktok video url
@@ -46,4 +45,3 @@ async def get_video_detail(url: str):
     return (video_id, video_url, cookies)
 
 
-# print(get_video_detail('https://www.tiktok.com/@yasbarbieri/video/7282733351352438049?is_from_webapp=1&sender_device=pc'))

@@ -1,0 +1,9 @@
+2025-01-25 at 20:02:30 | INFO | ID: 341119656, Имя: @safarik47 — успешно получил результат для TikTok.
+2025-02-12 at 22:08:24 | INFO | ID: 341119656, Имя: safarik47 — успешно получил результат для Instagram.
+2025-02-12 at 22:09:04 | INFO | ID: 341119656, Имя: @safarik47 — успешно получил результат для TikTok через get_response.
+2025-02-12 at 22:14:00 | ERROR | Произошла ошибка при скачивании: Fetching Post metadata failed. URL: https://www.instagram.com/share/_pk0wTzSt
+2025-02-12 at 22:15:39 | INFO | ID: 880312707, Имя: selivanova99 — успешно получил результат для Instagram.
+2025-02-12 at 23:34:40 | INFO | ID: 341119656, Имя: @safarik47 — успешно получил результат для TikTok через get_response.
+2025-02-12 at 23:34:55 | INFO | ID: 341119656, Имя: @safarik47 — успешно получил результат для TikTok через get_response.
+2025-02-12 at 23:35:12 | INFO | ID: 341119656, Имя: safarik47 — успешно получил результат для Instagram.
+2025-02-12 at 23:35:41 | INFO | ID: 341119656, Имя: safarik47 — успешно получил результат для Instagram.

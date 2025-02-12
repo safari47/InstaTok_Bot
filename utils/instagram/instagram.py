@@ -1,6 +1,6 @@
 import instaloader
 from urllib.parse import urlparse
-from config.config import L
+# from config.config import L
 
 
 def get_shortcode(post_url):
@@ -49,4 +49,5 @@ def download_instagram_post(post_url: str) -> dict[str, str]:
 # Пример использования:
 # print(download_instagram_post('https://www.instagram.com/reel/DBwxztSsXK9/?igsh=am9lODZvdmd6b2U='))
 # print(download_instagram_post('https://www.instagram.com/reel/DBwOUQdxiu6/?igsh=MWhjMm45cTQzZDNzcg=='))
-print(download_instagram_post('https://www.instagram.com/reel/DE2pnu8qdRb/?igsh=ZWpneHd1d3NhcTVi'))
+# print(download_instagram_post('https://www.instagram.com/reel/DE2pnu8qdRb/?igsh=ZWpneHd1d3NhcTVi'))
+# print(download_instagram_post('https://www.instagram.com/share/_gVY_y61P'))
