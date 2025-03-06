@@ -4,7 +4,7 @@ from loguru import logger
 from aiohttp import web
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from handlers.start import router as start_router
-from config.config import bot, dp, settings
+from config.config import bot, dp, settings, cl
 import ssl
 
 
@@ -24,6 +24,7 @@ async def start_bot():
     await bot.set_webhook(f"{settings.BASE_URL}/webhook")
     # Отправляем сообщение админам о том, что бот был запущен
     await bot.send_message(settings.ADMIN_IDS, f"Я запущен🥳.")
+    await cl.get_client()
     logger.info("Бот успешно запущен.")
 
 
@@ -57,7 +58,7 @@ def main() -> None:
         dispatcher=dp, bot=bot  # Передаем диспетчер  # Передаем объект бота
     )
     # Регистрируем обработчик запросов на определенном пути
-    webhook_requests_handler.register(app, path='/webhook')
+    webhook_requests_handler.register(app, path="/webhook")
 
     # Настраиваем приложение и связываем его с диспетчером и ботом
     setup_application(app, dp, bot=bot)
@@ -68,7 +69,7 @@ def main() -> None:
     #     keyfile="/etc/letsencrypt/live/mediascrap.ru/privkey.pem",
     # )
     # Запускаем веб-сервер на указанном хосте и порте
-    web.run_app(app, host=settings.HOST, port=settings.PORT) #ssl_context=context)
+    web.run_app(app, host=settings.HOST, port=settings.PORT)  # ssl_context=context)
 
 
 # Точка входа в программу
@@ -82,8 +83,3 @@ if __name__ == "__main__":
     #     __name__
     # )  # Создаем логгер для использования в других частях программы
     main()  # Запускаем основную функцию
-
-
-
-
-

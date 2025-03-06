@@ -15,5 +15,6 @@ venv/
 
 *.db
 *.json
-
+insta.py
 *.html
+log.txt

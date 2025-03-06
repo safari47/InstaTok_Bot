@@ -8,10 +8,10 @@ from utils.tiktok.get_content import get_content
 from utils.tiktok.get_video_detail import get_video_detail
 import pathlib
 from loguru import logger
-from config.config import settings, bot
-from config.static import admin_notification, en, ru
+from config.static import en, ru
 from utils.tiktok.tiktok_api import get_response
-
+from config.config import cl
+from aiogram.types import InputMediaPhoto, InputMediaVideo
 cwd = pathlib.Path(__file__).parent.parent
 router = Router()
 
@@ -29,18 +29,6 @@ async def start(message: Message):
             first_name=message.from_user.first_name,
         )
 
-        await bot.send_message(
-            chat_id=settings.ADMIN_IDS,  # Здесь список или ID админа
-            text=admin_notification.format(
-                full_name=message.from_user.full_name,
-                telegram_id=telegram_id,
-                username=(
-                    message.from_user.username
-                    if message.from_user.username
-                    else "Не указано"
-                ),
-            ),
-        )
 
     # Определяем язык пользователя (по умолчанию английский)
     user_language = "ru" if message.from_user.language_code == "ru" else "en"
@@ -78,7 +66,7 @@ async def download_media(message: Message):
     wait_message = await message.answer(messages["wait_message"])
     input_url = message.text
     try:
-        output_media = download_instagram(input_url)
+        output_media = await cl.download_instagram(post_url=input_url)
 
         await wait_message.delete()
 

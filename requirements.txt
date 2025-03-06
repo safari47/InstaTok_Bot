@@ -1,5 +1,6 @@
 aiogram
-instaloader
+instagrapi
+aiograpi
 loguru
 pydantic
 pydantic-settings

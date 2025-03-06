@@ -2,9 +2,10 @@ import asyncio
 from aiogram.types import BotCommand, BotCommandScopeDefault
 from loguru import logger
 from handlers.start import router as start_router
-from config.config import bot, dp,settings
+from config.config import bot, dp, settings, cl
 from utils.db import initialize_database
 import logging
+
 
 # Функция, которая настроит командное меню (дефолтное для всех пользователей)
 async def set_commands():
@@ -15,7 +16,6 @@ async def set_commands():
 # Функция, которая выполнится когда бот запустится
 async def start_bot():
     await set_commands()
-
     await initialize_database()
     await bot.send_message(settings.ADMIN_IDS, f"Я запущен🥳.")
 
@@ -30,7 +30,7 @@ async def stop_bot():
 
 async def main():
     dp.include_router(start_router)
-
+    await cl.get_client()
     # регистрация функций
     dp.startup.register(start_bot)
     dp.shutdown.register(stop_bot)
